@@ -14,16 +14,20 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [selected, setSelected] = useState('all');
 
-  const FILTERS = {
-    all: 'all',
-    completed: 'completed',
-    active: 'active',
+  const LOAD_ERROR = {
+    LOAD_TODOS: 'Unable to load todos',
   };
+
+  enum FILTERS {
+    all = 'all',
+    completed = 'completed',
+    active = 'active',
+  }
 
   useEffect(() => {
     getTodos()
       .then(data => setTodo(data))
-      .catch(() => setError('Unable to load todos'));
+      .catch(() => setError(LOAD_ERROR.LOAD_TODOS));
   }, []);
 
   useEffect(() => {
@@ -34,13 +38,13 @@ export const App: React.FC = () => {
     }
   }, [error]);
 
-  const filterTodo = todo.filter(t => {
+  const filterTodo = todo.filter(todos => {
     if (selected === 'active') {
-      return !t.completed;
+      return !todos.completed;
     }
 
-    if (selected === 'completed') {
-      return t.completed;
+    if (selected === FILTERS.completed) {
+      return todos.completed;
     }
 
     return true;
