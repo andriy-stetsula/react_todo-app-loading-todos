@@ -9,20 +9,20 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import cn from 'classnames';
 
+enum FILTERS {
+  all = 'all',
+  completed = 'completed',
+  active = 'active',
+}
+
+const LOAD_ERROR = {
+  LOAD_TODOS: 'Unable to load todos',
+};
+
 export const App: React.FC = () => {
   const [todo, setTodo] = useState<Todo[]>([]);
   const [error, setError] = useState('');
-  const [selected, setSelected] = useState('all');
-
-  const LOAD_ERROR = {
-    LOAD_TODOS: 'Unable to load todos',
-  };
-
-  enum FILTERS {
-    all = 'all',
-    completed = 'completed',
-    active = 'active',
-  }
+  const [selected, setSelected] = useState(FILTERS.all);
 
   useEffect(() => {
     getTodos()
@@ -39,7 +39,7 @@ export const App: React.FC = () => {
   }, [error]);
 
   const filterTodo = todo.filter(todos => {
-    if (selected === 'active') {
+    if (selected === FILTERS.active) {
       return !todos.completed;
     }
 
@@ -79,24 +79,24 @@ export const App: React.FC = () => {
         </header>
         {todo.length > 0 && (
           <section className={cn('todoapp__main')} data-cy="TodoList">
-            {filterTodo.map(t => (
+            {filterTodo.map(todos => (
               <div
                 data-cy="Todo"
-                className={`todo ${t.completed ? 'completed' : ''}`}
-                key={t.id}
+                className={`todo ${todos.completed ? 'completed' : ''}`}
+                key={todos.id}
               >
                 <label className="todo__status-label">
                   <input
                     data-cy="TodoStatus"
                     type="checkbox"
                     className="todo__status"
-                    checked={t.completed}
+                    checked={todos.completed}
                     readOnly
                   />
                 </label>
 
                 <span data-cy="TodoTitle" className="todo__title">
-                  {t.title}
+                  {todos.title}
                 </span>
 
                 {/* Remove button appears only on hover */}
@@ -121,7 +121,7 @@ export const App: React.FC = () => {
         {todo.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {todo.filter(t => !t.completed).length} items left
+              {todo.filter(todos => !todos.completed).length} items left
             </span>
 
             {/* Active link should have the 'selected' class */}
@@ -129,7 +129,7 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 className={cn('filter__link', {
-                  selected: selected === 'all',
+                  selected: selected === FILTERS.all,
                 })}
                 data-cy="FilterLinkAll"
                 onClick={() => setSelected(FILTERS.all)}
@@ -140,7 +140,7 @@ export const App: React.FC = () => {
               <a
                 href="#/active"
                 className={cn('filter__link', {
-                  selected: selected === 'active',
+                  selected: selected === FILTERS.active,
                 })}
                 data-cy="FilterLinkActive"
                 onClick={() => setSelected(FILTERS.active)}
@@ -150,7 +150,7 @@ export const App: React.FC = () => {
               <a
                 href="#/completed"
                 className={cn('filter__link', {
-                  selected: selected === 'completed',
+                  selected: selected === FILTERS.completed,
                 })}
                 data-cy="FilterLinkCompleted"
                 onClick={() => setSelected(FILTERS.completed)}
